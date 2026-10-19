@@ -50,3 +50,15 @@ def test_unsupported_format_fails(tmp_path: Path):
     result = validate_sequence_file(tmp_path / "file.txt", "genbank")
     assert not result.valid
     assert any("Unsupported format" in error for error in result.errors)
+
+def test_fastq_length_mismatch_fails(tmp_path: Path):
+    path = tmp_path / "mismatch.fastq"
+    path.write_text(
+        "@seq1\nACGT\n+\nIII\n",
+        encoding="utf-8",
+    )
+
+    result = validate_sequence_file(path, "fastq")
+
+    assert not result.valid
+    assert result.errors
